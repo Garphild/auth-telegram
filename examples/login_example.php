@@ -19,6 +19,7 @@ if (isset($_COOKIE["tg_user"])) {
 
 if ($_GET['logout']) {
   $tgAuth->logOut();
+  setcookie("tg_user", null);
 }
 
 if ($tgAuth->isAuthentificated()) {

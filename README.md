@@ -83,6 +83,18 @@ $tgAuth = new TelegramAuthentificator(BOT_USERNAME, BOT_KEY, BOT_COOKIE_NAME, $c
 if (isset($_COOKIE["tg_user"])) {
     $tgAuth->setUser(new TelegramUserModel(json_decode($_COOKIE["tg_user"], true)));
 }
+
+if ($_GET['logout']) {
+  $tgAuth->logOut();
+  setcookie("tg_user", null);
+}
+
+if ($tgAuth->isAuthentificated()) {
+    ... user authentificated ...
+} else {
+    ... not authentificated ...
+    echo $tgAuth->getWidget();
+}
 ```
 
 check_authorization.php
