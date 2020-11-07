@@ -1,7 +1,7 @@
 {
     "name": "garphild/auth-telegram",
     "description": "Telegram auth",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "type": "library",
     "license": "MIT",
     "require-dev": {
