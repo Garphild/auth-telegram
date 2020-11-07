@@ -9,7 +9,6 @@ use Garphild\AuthTelegram\Models\TelegramUserModel;
 class TelegramAuthentificator {
   protected $botName = '';
   protected $botKey = '';
-  protected $cookieName = '';
   public $user = null;
   protected $size = 'large';
   protected $userPhoto = true;
@@ -20,16 +19,13 @@ class TelegramAuthentificator {
   protected $async = true;
   protected $maxAge = 86400;
 
-  function __construct($botName, $botKey, $cookieName, $config = []) {
+  function __construct($botName, $botKey, $config = []) {
+    if ($botName === 'XXXXXXX') new \Exception("Bot name must be correct");
+    if (empty($botName)) new \Exception("Bot name must not be empty");
+    if ($botKey === 'XXXXXXX:XXXXXXX') new \Exception("Bot token must be correct");
+    if (empty($botKey)) new \Exception("Bot token must not be empty");
     $this->botName = $botName;
     $this->botKey = $botKey;
-    $this->cookieName = $cookieName;
-    $user = $this->getTelegramUserData();
-    if ($user) {
-      $this->user = new TelegramUserModel($user);
-    } else {
-      $this->user = null;
-    }
     $this->applyConfig($config);
   }
 
@@ -78,23 +74,12 @@ class TelegramAuthentificator {
     return $html;
   }
 
-  protected function getTelegramUserData() {
-    if (isset($_COOKIE[$this->cookieName])) {
-      $auth_data_json = urldecode($_COOKIE[$this->cookieName]);
-      $auth_data = json_decode($auth_data_json, true);
-      return $auth_data;
-    }
-    return null;
-  }
-
   function logIn($data) {
     $auth_data = $this->checkTelegramAuthorization($_GET);
     $this->setUser(new TelegramUserModel($auth_data));
-    setcookie($this->cookieName, json_encode($auth_data, 0, 99999));
   }
 
   function logOut() {
-    setcookie($this->cookieName, '');
     $this->clearUser();
   }
 
@@ -106,8 +91,9 @@ class TelegramAuthentificator {
     $this->user = null;
   }
 
-  function checkTelegramAuthorization($auth_data) {
-    $check_hash = $auth_data['hash'];
+  function checkTelegramAuthorization($auth) {
+    $check_hash = $auth['hash'];
+    $auth_data = $auth;
     unset($auth_data['hash']);
     $data_check_arr = [];
     foreach ($auth_data as $key => $value) {

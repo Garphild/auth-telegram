@@ -80,6 +80,9 @@ $config = [
   ...
 ];
 $tgAuth = new TelegramAuthentificator(BOT_USERNAME, BOT_KEY, BOT_COOKIE_NAME, $config);
+if (isset($_COOKIE["tg_user"])) {
+    $tgAuth->setUser(new TelegramUserModel(json_decode($_COOKIE["tg_user"], true)));
+}
 ```
 
 check_authorization.php
@@ -99,6 +102,7 @@ $tgAuth = new TelegramAuthentificator(BOT_USERNAME, BOT_KEY, BOT_COOKIE_NAME, $c
 
 try {
   $tgAuth->logIn($_GET);
+  setcookie("tg_user", json_encode($tgAuth->user));
 } catch (Exception $e) {
   die ($e->getMessage());
 }

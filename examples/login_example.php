@@ -1,5 +1,6 @@
 <?php
 
+use Garphild\AuthTelegram\Models\TelegramUserModel;
 use Garphild\AuthTelegram\TelegramAuthentificator;
 
 require_once "../vendor/autoload.php";
@@ -11,7 +12,10 @@ $config = [
   'resultActionType' => 'url',
   'resultAction' => 'check_authorization.php',
 ];
-$tgAuth = new TelegramAuthentificator(BOT_USERNAME, BOT_KEY, BOT_COOKIE_NAME, $config);
+$tgAuth = new TelegramAuthentificator(BOT_USERNAME, BOT_KEY, $config);
+if (isset($_COOKIE["tg_user"])) {
+    $tgAuth->setUser(new TelegramUserModel(json_decode($_COOKIE["tg_user"], true)));
+}
 
 if ($_GET['logout']) {
   $tgAuth->logOut();
