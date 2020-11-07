@@ -17,7 +17,6 @@ Features:
 * authentificate result can be sent to callback or reirection url
 * get write to user permission
 
-# Usage
 ## Constructor params
 * **$botName**: string - bot name
 * **$botKey**: string - bot auth key
@@ -32,6 +31,7 @@ Features:
 * **resultAction**: string - callback javascript function name or url to redirect
 * **requestWrite**: boolean - allow get write messages to user permission
 * **async**: boolean - allow async script load
+* **maxAge**: number - max age of auth data to be actual
 
 ## Public properties
 * **user** TelegramUserModel - authentificated user data or null
@@ -43,6 +43,8 @@ Features:
 * **setUser(TelegramUserModel $user): void** - set current user
 * **clearUser(): void** - clear current user
 * **checkTelegramAuthorization($auth_data): void** - check data from telegram
+
+# Usage
 
 ## Basic usage
 ```
@@ -58,3 +60,50 @@ $config = [
 ];
 $tgAuth = new TelegramAuthentificator(BOT_USERNAME, BOT_KEY, BOT_COOKIE_NAME, $config);
 ```
+
+## Redirect
+
+See examples folder. This is simple examples. Don't use in production. Use sessions to store data or JWT keys or any secure method.
+
+login_example.php
+```
+require_once "./vendor/autoload.php";
+
+use Garphild\AuthTelegram\TelegramAuthentificator;
+
+define('BOT_USERNAME', 'XXXXXXX'); // place username of your bot here
+define('BOT_KEY', 'XXXXX:XXXXXXXXX'); // place @botFather key of your bot here
+define('BOT_COOKIE_NAME', 'XXXXXX'); // place cookie name to store data
+$config = [
+  'resultActionType' => 'url',
+  'resultAction' => 'check_authorization.php',
+  ...
+];
+$tgAuth = new TelegramAuthentificator(BOT_USERNAME, BOT_KEY, BOT_COOKIE_NAME, $config);
+```
+
+check_authorization.php
+
+```
+require_once "./vendor/autoload.php";
+
+use Garphild\AuthTelegram\TelegramAuthentificator;
+
+define('BOT_USERNAME', 'XXXXXXX'); // place username of your bot here
+define('BOT_KEY', 'XXXXX:XXXXXXXXX'); // place @botFather key of your bot here
+define('BOT_COOKIE_NAME', 'XXXXXX'); // place cookie name to store data
+$config = [
+  ...
+];
+$tgAuth = new TelegramAuthentificator(BOT_USERNAME, BOT_KEY, BOT_COOKIE_NAME, $config);
+
+try {
+  $tgAuth->logIn($_GET);
+} catch (Exception $e) {
+  die ($e->getMessage());
+}
+
+header('Location: login_example.php');
+```
+
+After success login user's info available as $tgAuth->user.

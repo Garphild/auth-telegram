@@ -2,6 +2,8 @@
 
 namespace Garphild\AuthTelegram;
 
+use Garphild\AuthTelegram\Exceptions\OutdatedException;
+use Garphild\AuthTelegram\Exceptions\UnknownSourceException;
 use Garphild\AuthTelegram\Models\TelegramUserModel;
 
 class TelegramAuthentificator {
@@ -16,6 +18,7 @@ class TelegramAuthentificator {
   protected $resultAction = '';
   protected $requestWrite = true;
   protected $async = true;
+  protected $maxAge = 86400;
 
   function __construct($botName, $botKey, $cookieName, $config = []) {
     $this->botName = $botName;
@@ -42,6 +45,7 @@ class TelegramAuthentificator {
     if (isset($config['resultActionType'])) $this->resultActionType = $config['resultActionType'];
     if (isset($config['requestWrite'])) $this->requestWrite = $config['requestWrite'];
     if (isset($config['async'])) $this->async = $config['async'];
+    if (isset($config['maxAge'])) $this->maxAge = $config['maxAge'];
   }
 
   function getWidget() {
@@ -78,10 +82,15 @@ class TelegramAuthentificator {
     if (isset($_COOKIE[$this->cookieName])) {
       $auth_data_json = urldecode($_COOKIE[$this->cookieName]);
       $auth_data = json_decode($auth_data_json, true);
-      $this->checkTelegramAuthorization($auth_data);
       return $auth_data;
     }
     return null;
+  }
+
+  function logIn($data) {
+    $auth_data = $this->checkTelegramAuthorization($_GET);
+    $this->setUser(new TelegramUserModel($auth_data));
+    setcookie($this->cookieName, json_encode($auth_data, 0, 99999));
   }
 
   function logOut() {
@@ -109,10 +118,10 @@ class TelegramAuthentificator {
     $secret_key = hash('sha256', $this->botKey, true);
     $hash = hash_hmac('sha256', $data_check_string, $secret_key);
     if (strcmp($hash, $check_hash) !== 0) {
-      throw new Exception('Data is NOT from Telegram');
+      throw new UnknownSourceException();
     }
-    if ((time() - $auth_data['auth_date']) > 86400) {
-      throw new Exception('Data is outdated');
+    if ((time() - $auth_data['auth_date']) > $this->maxAge) {
+      throw new OutdatedException();
     }
     return $auth_data;
   }

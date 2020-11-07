@@ -1,16 +1,24 @@
 <?php
 
-define('BOT_TOKEN', '1461964873:AAEECDqBNhp8HHsaNIcOsQ9BuXm0-0hbAmc'); // place bot token of your bot here
+use Garphild\AuthTelegram\TelegramAuthentificator;
 
-function saveTelegramUserData($auth_data) {
-  $auth_data_json = json_encode($auth_data);
-  setcookie('tg_user', $auth_data_json);
+require_once "../vendor/autoload.php";
+
+if (file_exists("./env.php")) {
+  require_once "./env.php";
+} else {
+  define('BOT_USERNAME', 'XXXXXXX'); // place username of your bot here
+  define('BOT_KEY', 'XXXXXX:XXXXXXX'); // place username of your bot here
+  define('BOT_COOKIE_NAME', 'XXXXXX'); // place username of your bot here
 }
-
+$config = [
+  'resultActionType' => 'url',
+  'resultAction' => 'check_authorization.php',
+];
+$tgAuth = new TelegramAuthentificator(BOT_USERNAME, BOT_KEY, BOT_COOKIE_NAME, $config);
 
 try {
-  $auth_data = checkTelegramAuthorization($_GET);
-  saveTelegramUserData($auth_data);
+  $tgAuth->logIn($_GET);
 } catch (Exception $e) {
   die ($e->getMessage());
 }

@@ -2,7 +2,7 @@
 
 use Garphild\AuthTelegram\TelegramAuthentificator;
 
-require_once "./vendor/autoload.php";
+require_once "../vendor/autoload.php";
 
 define('BOT_USERNAME', 'gTests_bot'); // place username of your bot here
 define('BOT_KEY', '1461964873:AAEECDqBNhp8HHsaNIcOsQ9BuXm0-0hbAmc'); // place username of your bot here
@@ -15,7 +15,6 @@ $tgAuth = new TelegramAuthentificator(BOT_USERNAME, BOT_KEY, BOT_COOKIE_NAME, $c
 
 if ($_GET['logout']) {
   $tgAuth->logOut();
-  exit;
 }
 
 if ($tgAuth->isAuthentificated()) {
