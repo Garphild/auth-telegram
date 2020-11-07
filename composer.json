@@ -1,0 +1,25 @@
+{
+    "name": "garphild/auth-telegram",
+    "description": "Telegram auth",
+    "version": "1.0.0",
+    "type": "library",
+    "license": "MIT",
+    "require-dev": {
+        "phpunit/phpunit": "^9.2"
+    },
+    "authors": [
+        {
+            "name": "Serhii Kondrashov",
+            "email": "garphild28@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Garphild\\AuthTelegram\\": "src/"
+        }
+    }
+}
